@@ -1,3 +1,9 @@
+const comment = require("./comment");
+const hashtag = require("./hashtag");
+const image = require("./image");
+const post = require("./post");
+const user = require("./user");
+
 const Sequelize = require("sequelize");
 const env = process.env.NODE_ENV || "development";
 const config = require("../config/config")[env];
@@ -9,6 +15,16 @@ const sequelize = new Sequelize(
   config.password,
   config
 );
+
+db.Comment = comment;
+db.Hashtag = hashtag;
+db.Image = image;
+db.Post = post;
+db.User = user;
+
+Object.keys(db).forEach((modelName) => {
+  db[modelName].init(sequelize);
+});
 
 Object.keys(db).forEach((modelName) => {
   if (db[modelName].associate) {
