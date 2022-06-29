@@ -1,10 +1,11 @@
-import express, { Request, Response } from "express";
+const express = require("express");
+
 const { User } = require("../../models");
 const bcrypt = require("bcrypt");
 
 const router = express.Router();
 
-router.post("/signup", async (req: Request, res: Response, next) => {
+router.post("/signup", async (req, res, next) => {
   try {
     const existUser = await User.findOne({
       where: {
