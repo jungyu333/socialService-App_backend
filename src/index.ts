@@ -1,6 +1,9 @@
 import express, { Request, Response, NextFunction } from "express";
+const cors = require("cors");
 const db = require("../models");
 const app = express();
+
+const signUpRouter = require("./routes/signUp");
 
 db.sequelize
   .sync()
@@ -9,10 +12,16 @@ db.sequelize
   })
   .catch(console.error);
 
-app.get("/", (req: Request, res: Response, next: NextFunction) => {
-  res.send("Hello Express with Typescript!");
-});
+app.use(
+  cors({
+    origin: true,
+  })
+);
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.listen(3000, () => {
-  console.log("Starting Server with 3000 port!");
+app.use(signUpRouter);
+
+app.listen(4000, () => {
+  console.log("Starting Server with 4000 port!");
 });
