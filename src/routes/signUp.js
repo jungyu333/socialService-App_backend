@@ -1,11 +1,12 @@
 const express = require("express");
+const { isNotLoggedIn } = require("./middlewares");
 
 const { User } = require("../../models");
 const bcrypt = require("bcrypt");
 
 const router = express.Router();
 
-router.post("/signup", async (req, res, next) => {
+router.post("/signup", isNotLoggedIn, async (req, res, next) => {
   try {
     const existUser = await User.findOne({
       where: {
