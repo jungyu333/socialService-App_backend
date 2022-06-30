@@ -10,6 +10,7 @@ const passport = require("passport");
 
 const signUpRouter = require("./routes/signUp");
 const logInOutRouter = require("./routes/user");
+const editInfoRouter = require("./routes/editInfo");
 
 db.sequelize
   .sync()
@@ -22,7 +23,8 @@ passportConfig();
 
 app.use(
   cors({
-    origin: true,
+    origin: "http://localhost:3000",
+    credentials: true,
   })
 );
 
@@ -42,6 +44,7 @@ app.use(passport.session());
 
 app.use(signUpRouter);
 app.use(logInOutRouter);
+app.use(editInfoRouter);
 
 app.listen(4000, () => {
   console.log("Starting Server with 4000 port!");
