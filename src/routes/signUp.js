@@ -1,10 +1,42 @@
 const express = require("express");
-const { isNotLoggedIn } = require("./middlewares");
-
+const { isNotLoggedIn, isLoggedIn } = require("./middlewares");
 const { User } = require("../../models");
+const path = require("path");
 const bcrypt = require("bcrypt");
+const multer = require("multer");
+const fs = require("fs");
 
 const router = express.Router();
+
+try {
+  fs.accessSync("avatarupload");
+} catch (err) {
+  console.log("avatarupload 폴더 생성");
+  fs.mkdirSync("avatarupload");
+}
+
+const avatarUpload = multer({
+  storage: multer.diskStorage({
+    destination(req, file, done) {
+      done(null, "avatarupload");
+    },
+    filename(req, file, done) {
+      const ext = path.extname(file.originalname);
+      const basename = path.basename(file.originalname, ext);
+      done(null, basename + "_" + new Date().getTime() + ext);
+    },
+  }),
+  limits: { fieldSize: 20 * 1024 * 1024 },
+});
+
+router.post(
+  "/avatar",
+  isNotLoggedIn,
+  avatarUpload.single("avatar"),
+  (req, res, next) => {
+    res.json(req.file.filename);
+  }
+);
 
 router.post("/signup", isNotLoggedIn, async (req, res, next) => {
   try {
