@@ -1,8 +1,34 @@
 const express = require("express");
+const multer = require("multer");
+const path = require("path");
 const { isLoggedIn } = require("./middlewares");
 const { User } = require("../../models");
+const fs = require("fs");
 
 const router = express.Router();
+
+const avatarEdit = multer({
+  storage: multer.diskStorage({
+    destination(req, file, done) {
+      done(null, "avatarupload");
+    },
+    filename(req, file, done) {
+      const ext = path.extname(file.originalname);
+      const basename = path.basename(file.originalname, ext);
+      done(null, basename + "_" + new Date().getTime() + ext);
+    },
+  }),
+  limits: { fieldSize: 20 * 1024 * 1024 },
+});
+
+router.post(
+  "/editavatar",
+  isLoggedIn,
+  avatarEdit.single("avataredit"),
+  (req, res, next) => {
+    res.json(req.file.filename);
+  }
+);
 
 router.patch("/editinfo", isLoggedIn, async (req, res, next) => {
   try {
