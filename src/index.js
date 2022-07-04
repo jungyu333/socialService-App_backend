@@ -8,7 +8,7 @@ const app = express();
 const path = require("path");
 const passportConfig = require("../passport");
 const passport = require("passport");
-
+const postRouter = require("./routes/post");
 const signUpRouter = require("./routes/signUp");
 const logInOutRouter = require("./routes/user");
 const editInfoRouter = require("./routes/editInfo");
@@ -52,6 +52,7 @@ app.get("/", (req, res) => {
 app.use(signUpRouter);
 app.use(logInOutRouter);
 app.use(editInfoRouter);
+app.use(postRouter);
 
 app.listen(4000, () => {
   console.log("Starting Server with 4000 port!");
