@@ -34,6 +34,7 @@ dotenv.config();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/", express.static("avatarupload"));
+app.use("/", express.static("postImgUpload"));
 app.use(
   session({
     saveUninitialized: false,
