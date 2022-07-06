@@ -123,4 +123,19 @@ router.post("/post/:postId/comment", isLoggedIn, async (req, res, next) => {
   }
 });
 
+router.delete("/post/:postId", isLoggedIn, async (req, res, next) => {
+  try {
+    await Post.destroy({
+      where: {
+        id: req.params.postId,
+        UserId: req.user.id,
+      },
+    });
+    res.status(200).json({ postId: req.params.postId });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+});
+
 module.exports = router;
