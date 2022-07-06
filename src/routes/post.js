@@ -69,6 +69,15 @@ router.post(
             model: User,
             attributes: ["id", "nickname", "avatar"],
           },
+          {
+            model: Comment,
+            include: [
+              {
+                model: User,
+                attributes: ["id", "nickname", "avatar"],
+              },
+            ],
+          },
         ],
       });
       res.status(201).json(fullPost);
@@ -78,5 +87,40 @@ router.post(
     }
   }
 );
+
+router.post("/post/:postId/comment", isLoggedIn, async (req, res, next) => {
+  try {
+    const post = await Post.findOne({
+      where: {
+        id: req.params.postId,
+      },
+    });
+    if (!post) {
+      return res.status(403).send("존재하지 않는 게시글입니다.");
+    } else {
+      const comment = await Comment.create({
+        content: req.body.content,
+        PostId: req.params.postId,
+        UserId: req.user.id,
+      });
+
+      const fullComment = await Comment.findOne({
+        where: {
+          id: comment.id,
+        },
+        include: [
+          {
+            model: User,
+            attributes: ["id", "nickname", "avatar"],
+          },
+        ],
+      });
+      res.status(200).json(fullComment);
+    }
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+});
 
 module.exports = router;
