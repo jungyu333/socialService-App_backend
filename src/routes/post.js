@@ -88,6 +88,27 @@ router.post(
   }
 );
 
+router.delete(
+  `/post/:postId/:commentId`,
+  isLoggedIn,
+  async (req, res, next) => {
+    try {
+      await Comment.destroy({
+        where: {
+          id: req.params.commentId,
+        },
+      });
+
+      res
+        .status(200)
+        .json({ postId: req.params.postId, commentId: req.params.commentId });
+    } catch (err) {
+      console.error(err);
+      next(err);
+    }
+  }
+);
+
 router.post("/post/:postId/comment", isLoggedIn, async (req, res, next) => {
   try {
     const post = await Post.findOne({
