@@ -125,13 +125,23 @@ router.post("/post/:postId/comment", isLoggedIn, async (req, res, next) => {
 
 router.delete("/post/:postId", isLoggedIn, async (req, res, next) => {
   try {
-    await Post.destroy({
+    const clickedPost = await Post.findOne({
       where: {
         id: req.params.postId,
-        UserId: req.user.id,
       },
     });
-    res.status(200).json({ postId: req.params.postId });
+
+    if (clickedPost.UserId !== req.user.id) {
+      return res.status(403).send("작성자만 가능합니다");
+    } else {
+      await Post.destroy({
+        where: {
+          id: req.params.postId,
+          UserId: req.user.id,
+        },
+      });
+      res.status(200).json({ postId: req.params.postId });
+    }
   } catch (err) {
     console.error(err);
     next(err);
