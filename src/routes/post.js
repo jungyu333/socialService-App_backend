@@ -78,6 +78,11 @@ router.post(
               },
             ],
           },
+          {
+            model: User,
+            as: "Likers",
+            attributes: ["id"],
+          },
         ],
       });
       res.status(201).json(fullPost);
@@ -87,6 +92,43 @@ router.post(
     }
   }
 );
+
+router.patch(`/post/:postId/like`, isLoggedIn, async (req, res, next) => {
+  try {
+    const clickedPost = await Post.findOne({
+      where: {
+        id: req.params.postId,
+      },
+    });
+
+    if (!clickedPost) {
+      return res.status(403).send("존재하지 않는 게시글입니다.");
+    }
+    await clickedPost.addLikers(req.user.id);
+    res.status(200).json({ postId: req.params.postId, userId: req.user.id });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+});
+
+router.delete(`/post/:postId/like`, isLoggedIn, async (req, res, next) => {
+  try {
+    const clickedPost = await Post.findOne({
+      where: {
+        id: req.params.postId,
+      },
+    });
+    if (!clickedPost) {
+      return res.status(403).send("존재하지 않는 게시글입니다.");
+    }
+    await clickedPost.removeLikers(req.user.id);
+    res.json({ postId: req.params.postId, userId: req.user.id });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+});
 
 router.delete(
   `/post/:postId/:commentId`,
