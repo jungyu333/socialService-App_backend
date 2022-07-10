@@ -50,14 +50,13 @@ router.get("/posts", async (req, res, next) => {
   }
 });
 
-router.get(`/posts/user`, isLoggedIn, async (req, res, next) => {
+router.get(`/posts/:userId`, isLoggedIn, async (req, res, next) => {
   try {
-    const where = { UserId: req.user.id };
+    const where = { UserId: req.params.userId };
     if (parseInt(req.query.lastId, 10)) {
       where.id = {
         [Op.lt]: parseInt(req.query.lastId, 10),
       };
-      where.UserId = req.user.id;
     }
     const userPosts = await Post.findAll({
       where,
