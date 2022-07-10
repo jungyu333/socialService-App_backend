@@ -50,7 +50,7 @@ router.get("/posts", async (req, res, next) => {
   }
 });
 
-router.get(`/posts/:userId`, isLoggedIn, async (req, res, next) => {
+router.get(`/posts/:userId`, async (req, res, next) => {
   try {
     const where = { UserId: req.params.userId };
     if (parseInt(req.query.lastId, 10)) {

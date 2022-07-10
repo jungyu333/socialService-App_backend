@@ -5,7 +5,7 @@ const { isLoggedIn, isNotLoggedIn } = require("./middlewares");
 
 const router = express.Router();
 
-router.get("/userload", async (req, res, next) => {
+router.get("/user", async (req, res, next) => {
   try {
     if (req.user) {
       const user = await User.findOne({
@@ -33,6 +33,36 @@ router.get("/userload", async (req, res, next) => {
     } else {
       res.status(200).json(null);
     }
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+});
+
+router.get(`/user/:userId`, async (req, res, next) => {
+  try {
+    const user = await User.findOne({
+      where: {
+        id: req.params.userId,
+      },
+      attributes: {
+        exclude: ["password"],
+      },
+      include: [
+        {
+          model: Post,
+        },
+        {
+          model: User,
+          as: "Followings",
+        },
+        {
+          model: User,
+          as: "Followers",
+        },
+      ],
+    });
+    res.status(200).json(user);
   } catch (err) {
     console.error(err);
     next(err);
