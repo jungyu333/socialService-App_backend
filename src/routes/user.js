@@ -95,10 +95,12 @@ router.post("/login", isNotLoggedIn, (req, res, next) => {
           {
             model: User,
             as: "Followings",
+            attributes: ["id"],
           },
           {
             model: User,
             as: "Followers",
+            attributes: ["id"],
           },
         ],
       });
@@ -111,6 +113,25 @@ router.post("/logout", isLoggedIn, (req, res) => {
   req.logout();
   req.session.destroy();
   res.send("ok");
+});
+
+router.post(`/user/:userId/follow`, isLoggedIn, async (req, res, next) => {
+  try {
+    const clickedUser = await User.findOne({
+      where: {
+        id: req.params.userId,
+      },
+    });
+    if (!clickedUser) {
+      return res.status(403).send("존재하지 않는 유저입니다");
+    } else {
+      clickedUser.addFollowers(req.user.id);
+      res.status(200).json({ id: parseInt(req.params.userId, 10) });
+    }
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
 });
 
 module.exports = router;
