@@ -126,8 +126,33 @@ router.post(`/user/:userId/follow`, isLoggedIn, async (req, res, next) => {
       return res.status(403).send("존재하지 않는 유저입니다");
     } else {
       clickedUser.addFollowers(req.user.id);
-      res.status(200).json({ id: parseInt(req.params.userId, 10) });
+      res.status(200).json({
+        userId: parseInt(req.params.userId, 10),
+        myId: parseInt(req.user.id, 10),
+      });
     }
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+});
+
+router.delete(`/user/:userId/follow`, isLoggedIn, async (req, res, next) => {
+  try {
+    const clickedUser = await User.findOne({
+      where: {
+        id: req.params.userId,
+      },
+    });
+    if (!clickedUser) {
+      return res.status(403).send("존재하지 않는 유저입니다");
+    } else {
+      clickedUser.removeFollowers(req.user.id);
+    }
+    res.status(200).json({
+      userId: parseInt(req.params.userId, 10),
+      myId: parseInt(req.user.id, 10),
+    });
   } catch (err) {
     console.error(err);
     next(err);
