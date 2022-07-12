@@ -14,6 +14,7 @@ const logInOutRouter = require("./routes/user");
 const postsRouter = require("./routes/posts");
 const editInfoRouter = require("./routes/editInfo");
 const hashtagRouter = require("./routes/hashtag");
+const searchRouter = require("./routes/search");
 
 db.sequelize
   .sync()
@@ -58,6 +59,7 @@ app.use(editInfoRouter);
 app.use(postRouter);
 app.use(postsRouter);
 app.use(hashtagRouter);
+app.use(searchRouter);
 
 app.listen(4000, () => {
   console.log("Starting Server with 4000 port!");
