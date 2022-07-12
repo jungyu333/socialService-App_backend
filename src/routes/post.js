@@ -3,7 +3,7 @@ const multer = require("multer");
 const { isLoggedIn } = require("./middlewares");
 const path = require("path");
 const fs = require("fs");
-const { Post, Image, Comment, User } = require("../../models");
+const { Post, Image, Comment, User, Hashtag } = require("../../models");
 const router = express.Router();
 
 try {
@@ -42,10 +42,24 @@ router.post(
   postImgUpload.none(),
   async (req, res, next) => {
     try {
+      const hashtag = req.body.content.match(/#[^\s#]+/g);
+
       const post = await Post.create({
         content: req.body.content,
         UserId: req.user.id,
       });
+      if (hashtag) {
+        const result = await Promise.all(
+          hashtag.map((tag) =>
+            Hashtag.findOrCreate({
+              where: {
+                name: tag.slice(1).toLowerCase(),
+              },
+            })
+          )
+        );
+        await post.addHashtags(result.map((hash) => hash[0]));
+      }
       if (req.body.image) {
         if (Array.isArray(req.body.image)) {
           const images = await Promise.all(

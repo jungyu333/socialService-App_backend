@@ -22,10 +22,12 @@ router.get("/user", async (req, res, next) => {
           {
             model: User,
             as: "Followings",
+            attributes: ["id"],
           },
           {
             model: User,
             as: "Followers",
+            attributes: ["id"],
           },
         ],
       });
@@ -55,10 +57,12 @@ router.get(`/user/:userId`, async (req, res, next) => {
         {
           model: User,
           as: "Followings",
+          attributes: ["id"],
         },
         {
           model: User,
           as: "Followers",
+          attributes: ["id"],
         },
       ],
     });
