@@ -1,9 +1,41 @@
 const express = require("express");
 const passport = require("passport");
+const { Op } = require("sequelize");
 const { User, Post } = require("../../models");
 const { isLoggedIn, isNotLoggedIn } = require("./middlewares");
 
 const router = express.Router();
+
+router.get(`/user/followinglist`, isLoggedIn, async (req, res, next) => {
+  try {
+    const user = await User.findOne({
+      where: {
+        id: req.user.id,
+      },
+    });
+    if (!user) {
+      return res.status(403).send("존재 하지 않는 유저입니다");
+    }
+    const where = {};
+    if (parseInt(req.query.lastId, 10)) {
+      where.id = { [Op.lt]: parseInt(req.query.lastId, 10) };
+    }
+    const followings = await user.getFollowings({
+      where,
+      limit: 8,
+      order: [["createdAt", "DESC"]],
+
+      attributes: {
+        exclude: ["password"],
+      },
+    });
+
+    res.status(200).json(followings);
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+});
 
 router.get("/user", async (req, res, next) => {
   try {
@@ -22,11 +54,13 @@ router.get("/user", async (req, res, next) => {
           {
             model: User,
             as: "Followings",
+            through: { attributes: [] },
             attributes: ["id"],
           },
           {
             model: User,
             as: "Followers",
+            through: { attributes: [] },
             attributes: ["id"],
           },
         ],
