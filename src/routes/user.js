@@ -37,6 +37,38 @@ router.get(`/user/followinglist`, isLoggedIn, async (req, res, next) => {
   }
 });
 
+router.get(`/user/followerlist`, isLoggedIn, async (req, res, next) => {
+  try {
+    const user = await User.findOne({
+      where: {
+        id: req.user.id,
+      },
+    });
+    if (!user) {
+      return res.status(403).send("존재 하지 않는 유저입니다");
+    }
+    const where = {};
+    if (parseInt(req.query.lastId, 10)) {
+      where.id = {
+        [Op.lt]: parseInt(req.query.lastId, 10),
+      };
+    }
+
+    const followers = await user.getFollowers({
+      where,
+      limit: 8,
+      order: [["createdAt", "DESC"]],
+      attributes: {
+        exclude: ["password"],
+      },
+    });
+    res.status(200).json(followers);
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+});
+
 router.get("/user", async (req, res, next) => {
   try {
     if (req.user) {
