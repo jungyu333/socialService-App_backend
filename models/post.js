@@ -10,7 +10,6 @@ module.exports = class Post extends Model {
           type: DataTypes.TEXT,
           allowNull: false,
         },
-        // RetweetId
       },
       {
         modelName: "Post",
@@ -27,6 +26,5 @@ module.exports = class Post extends Model {
     db.Post.hasMany(db.Comment); // post.addComments, post.getComments
     db.Post.hasMany(db.Image); // post.addImages, post.getImages
     db.Post.belongsToMany(db.User, { through: "Like", as: "Likers" }); // post.addLikers, post.removeLikers
-    db.Post.belongsTo(db.Post, { as: "Retweet" }); // post.addRetweet
   }
 };
